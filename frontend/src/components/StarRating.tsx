@@ -1,0 +1,2 @@
+type Props = { value: number; onChange?: (value: number) => void; label?: string };
+export default function StarRating({ value, onChange, label = "Rating" }: Props) { return <div className="stars" aria-label={label}>{[1,2,3,4,5].map((star) => <button key={star} type="button" className={star <= value ? "star selected" : "star"} onClick={() => onChange?.(star)} disabled={!onChange} aria-label={`${star} star${star > 1 ? "s" : ""}`}>★</button>)}</div>; }

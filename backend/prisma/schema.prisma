@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  NORMAL_USER
+  STORE_OWNER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   // validated in app layer: 20-60 chars
+  email     String   @unique
+  password  String   // bcrypt hash, never plain text
+  address   String   // validated in app layer: max 400 chars
+  role      Role     @default(NORMAL_USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // If this user is a STORE_OWNER, they own exactly one store
+  ownedStore Store?
+
+  // If this user is a NORMAL_USER, they can submit many ratings
+  ratings   Rating[]
+
+  @@index([role])
+}
+
+model Store {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  address   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownerId   String?  @unique
+  owner     User?    @relation(fields: [ownerId], references: [id])
+
+  ratings   Rating[]
+
+  @@index([name])
+}
+
+model Rating {
+  id             String   @id @default(uuid())
+  value          Int      // 1 to 5, validated in app layer
+  comment        String?  // optional review text, powers sentiment feature
+  sentimentScore Float?   // -1 to 1, computed on write via the sentiment service
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+
+  // one user can rate a given store only once — resubmission = update, not new row
+  @@unique([userId, storeId])
+  @@index([storeId])
+}
