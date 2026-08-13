@@ -19,6 +19,10 @@ StorePulse is a role-based store rating platform built for the FullStack Intern 
 - Store Owner dashboard with average rating, customer feedback, and sentiment labels
 - Sentiment analysis for written reviews, presented as **Happy**, **Neutral**, **Unhappy**, or **No comment**
 
+## Product walkthrough
+
+See the [UI walkthrough](https://github.com/Vedika-Sd/storepulse-role-based-rating-platform/blob/main/UI_walkthrough.md) for screen-by-screen features and screenshots.
+
 ## Tech stack
 
 | Area | Technology |
