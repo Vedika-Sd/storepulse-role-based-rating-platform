@@ -1,5 +1,12 @@
 # StorePulse
 
+[![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=1E293B)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-1F2937?logo=express&logoColor=white)](https://expressjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Neon](https://img.shields.io/badge/Neon_PostgreSQL-00E599?logo=neon&logoColor=111827)](https://neon.com/)
+
 StorePulse is a role-based store rating platform built for the FullStack Intern Coding Challenge. It gives customers a simple way to rate stores, gives owners a focused view of customer feedback, and gives administrators a single place to manage the platform.
 
 ## Highlights
@@ -25,6 +32,33 @@ StorePulse is a role-based store rating platform built for the FullStack Intern 
 | Review analysis | `sentiment` package |
 
 Neon provides the hosted PostgreSQL database used by Prisma. This keeps the application database separate from the local development environment and supports quick, reliable data retrieval.
+
+## Architecture and workflow
+
+```mermaid
+flowchart LR
+    Client[React + Vite client]
+    Auth[JWT authentication\nand role checks]
+    API[Express API]
+    Prisma[Prisma ORM]
+    DB[(Neon PostgreSQL)]
+    Sentiment[Sentiment service]
+
+    Client -->|Login, browse, manage, rate| API
+    API --> Auth
+    Auth --> API
+    API --> Prisma
+    Prisma --> DB
+    API -->|Written review| Sentiment
+    Sentiment -->|Score saved with rating| Prisma
+```
+
+1. A user signs in once and receives a JWT containing their role.
+2. Protected frontend routes and backend middleware allow access only to that role's actions.
+3. Administrators create stores together with their Store Owner account in one database transaction.
+4. Members submit or update a 1 to 5 star rating and optional review.
+5. The backend calculates and stores sentiment for written feedback.
+6. Store Owners see ratings for their own store and a plain-language sentiment label for each review.
 
 ## Roles and workflow
 
